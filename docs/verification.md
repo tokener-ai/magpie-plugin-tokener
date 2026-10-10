@@ -28,9 +28,9 @@ bun run check
 Observed:
 
 ```text
-15 pass
+16 pass
 0 fail
-45 expect() calls
+49 expect() calls
 Plugin shape OK: tokener; 9 fallback models; direct ESM entry
 ```
 
@@ -243,3 +243,74 @@ No plugin cache, retry state, account manager or balance approximation is added.
 - GUI presentation, multi-account selection and strict migration behavior were inspected in source but not exercised through the GUI.
 - GitHub/npm installation of the final feature; npm publication is outside this change.
 - GitHub Actions execution is pending feature push. The declared gates passed locally with the workflow's Bun version.
+
+## F. Embedded provider icon
+
+The auth hook embeds a self-contained `data:image/svg+xml;base64,` icon. `assets/logo-mark.svg` is the unmodified 1,365-byte official mark; `assets/provider-icon.svg` is the unmodified 1,456-byte official console favicon, which places the same paths and colors on a rounded `#F7F5EE` background. The latter produces a 1,970-byte URI. Both sources have no external references. Package `files` remains `index.mjs` and `README.md`: the complete runtime icon is in the entry.
+
+### Theme decision
+
+magpie v0.1.1161 (`53cce816643aaf47f19a07f3b6219cccd283581d`) renders cached plugin icons as `<img>` via `/api/icons/` (`internal/gui/assets/app.js:184-190`). The generic image rule only sets sizing and object-fit (`app.css:139-141`). Plugin logo containers use `var(--pill)` (`plugins.css:47-50`), which becomes `#2d2d33` in dark mode (`app.css:80-89`); provider picker tiles have no fixed light background. Thus the transparent near-black mark would lose contrast in dark mode.
+
+The strongest simpler alternative is embedding the bare mark unchanged. It needs fewer SVG elements, but the actual host does not provide a light background or recolor cached images. Built-in monochrome icons such as Factory and OpenCode Zen Free use named SVG masks and currentColor; `market.json` also includes fixed-color image icons such as `kiro-color` and `workbuddy-color`. A plugin's cached `file:` icon always uses the image path, so the mask behavior cannot be reused through this contract. A hosted HTTPS image would retain the same theme problem and add a network dependency.
+
+Chosen: reuse Tokener's existing official light tile exactly from `ai-gateway/apps/console/public/favicon.svg`, rather than inventing a palette or changing the logo colors. Its two path elements match `packages/design/brand/logo-mark.svg` exactly; its existing translation and uniform scale preserve shape. The official brand favicon PNGs use the same light rounded-square treatment. The brand guidance permits compact badge use. This makes the icon independent of host theme without adding theme options or fetch behavior.
+
+### Checks
+
+With Bun 1.3.14:
+
+```sh
+bun test
+bun run check
+xmllint --noout assets/logo-mark.svg assets/provider-icon.svg
+bun scripts/verify-host.mjs /Users/x/.cache/magpie/plugin-host/host-061353e98c8a.js
+```
+
+Observed: `16 pass`, `0 fail`, `49 expect() calls`; shape check passed; both SVGs parsed successfully. The new test checks a base64 SVG data URI, the complete official tile source and unchanged mark paths. The icon test fails on exported `main@a56f17c8` because `auth.icon` is absent. The installed host reported `tokener icon=1970 bytes; embedded SVG matches official light tile`; existing protocol, discovery and HTTP error checks passed.
+
+Source SHA-256 values:
+
+- Mark: `f554f20bada79618644bd4af21f2672ec53cd88f3ddf110fc7acba5e279c37f2`.
+- Tile: `c5dd669cb2de1e1c9adeb335a0b96a8cf9306c98fe2fb5d1b9771c5d3d56cd71`.
+
+### Installed binary and rendered themes
+
+An acceptance-only harness outside the repository created a temporary HOME and XDG config/cache/data/state directories, seeded the local models.dev cache, checked portable storage, redirected the public catalog to the localhost mock with the existing verification preload, and ran:
+
+```sh
+magpie --version
+magpie plugin add /Users/x/git/lg/magpie-plugin-tokener--provider-icon
+magpie plugin options /Users/x/git/lg/magpie-plugin-tokener--provider-icon '{"baseUrl":"http://127.0.0.1:<mock-port>/v1"}'
+magpie plugin list --json
+magpie web --no-open --addr 127.0.0.1:<web-port>
+```
+
+No login or paid model call was made. The new plugins.json was under the temporary HOME, confirming settings isolation. The real installed main checkout and user configuration were unchanged. Authenticated GETs returned:
+
+```text
+GET /api/providers → 200
+plugins[pid=tokener].name = Tokener.ai
+plugins[pid=tokener].icon = file:c5dd669cb2de1e1c.svg
+GET /api/icons/c5dd669cb2de1e1c.svg → 200 image/svg+xml
+1456 SVG bytes match official light tile and isolated icon cache
+```
+
+Chrome DevTools opened only a task-owned isolated browser page served by this real binary. On Plugins → Installed, the visible Tokener image decoded successfully in both emulated prefers-color-scheme themes, with root data-theme=auto. No DOM or stylesheet override was used. Computed DOM/style evidence:
+
+| Observation | Light | Dark |
+| --- | --- | --- |
+| Visible, decoded image | true | true |
+| Image CSS filter | none | none |
+| Plugin logo container background | rgb(241, 241, 244) | rgb(45, 45, 51) |
+| Plugin list background | rgb(255, 255, 255) | rgb(35, 35, 39) |
+| Body background | rgb(244, 244, 246) | rgb(26, 26, 30) |
+| Embedded SVG background | #F7F5EE | #F7F5EE |
+| Embedded mark fills | #101112, #0033FF | #101112, #0033FF |
+| Decoded image raster at 64×64: exact background/ink/blue pixels | 3019 / 232 / 230 | 3019 / 232 / 230 |
+
+The raw DOM evidence includes the visible image rectangle and all ancestor computed backgrounds, colors and filters. It demonstrates the theme change around an unchanged, self-contained light icon. The task browser page and isolated web server were closed afterward.
+
+Local evidence: host `/var/folders/5x/qb9zd6992hv4mxkfwtlvkfgh0000gn/T/tokener-host-FJGhzS/result.json`; installed-binary GUI API `/var/folders/5x/qb9zd6992hv4mxkfwtlvkfgh0000gn/T/tokener-icon-D14bQY/result.json`; theme DOM/styles `/Users/x/git/tmp/tokener-magpie-plugin/build/provider-icon-light.json` and `provider-icon-dark.json`. Harness: `/Users/x/git/tmp/tokener-magpie-plugin/build/verify-icon.mjs` (not shipped).
+
+Unverified: the user's actual desktop GUI. After owner-approved merge, run `git -C /Users/x/git/lg/magpie-plugin-tokener pull --ff-only`, quit and reopen magpie to reload the local-directory plugin, then inspect Tokener.ai in Plugins → Installed and Providers → Add a provider. No account, group or default-model change is required.

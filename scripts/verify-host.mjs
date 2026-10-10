@@ -47,6 +47,9 @@ try {
   const provider = providers.find((item) => item.id === "tokener");
   assert.ok(provider, JSON.stringify(providers));
   assert.equal(provider.name, "Tokener.ai");
+  assert.match(provider.icon, /^data:image\/svg\+xml;base64,/);
+  assert.equal(Buffer.from(provider.icon.split(",")[1], "base64").toString("utf8"), await Bun.file(path.join(target, "assets/provider-icon.svg")).text());
+  console.log(`Installed host: tokener icon=${Buffer.byteLength(provider.icon)} bytes; embedded SVG matches official light tile`);
   assert.deepEqual(provider.models.map((model) => model.id), ["chat-model", "messages-model"]);
   for (const model of provider.models) assert.equal(model.apiId, model.id);
   assert.equal(provider.models.find((model) => model.id === "messages-model").npm, "@ai-sdk/anthropic");
