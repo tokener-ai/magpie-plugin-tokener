@@ -25,6 +25,8 @@ From npm:
 magpie plugin add @tokener-ai/magpie-plugin-tokener
 ```
 
+In the magpie GUI, open **Plugins** → **Discover** and clear the search field. In **Have one in mind?**, enter `@tokener-ai/magpie-plugin-tokener` or `github:tokener-ai/magpie-plugin-tokener`, then click **Install**.
+
 ## Models and protocols
 
 The plugin joins the API key's authorized model IDs from `GET https://api.tokener.ai/v1/models` with the public catalog at `https://console.tokener.ai/api/public/v1/models`. Only IDs present in both lists appear. Authorized-only IDs such as the decision model `jev-latest` are silently excluded; they cannot use Chat or Messages. Text embedding models are excluded. Public metadata supplies names, capabilities and USD prices per million tokens. Authorized `max_input_tokens` and `max_output_tokens` take precedence over public context/output limits; missing output limits use the public value or zero.
