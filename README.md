@@ -1,6 +1,13 @@
 # Tokener.ai for magpie
 
-A Tokener.ai API-key provider plugin tested with magpie v0.1.1161. The entry is plain ESM: no build step or runtime dependencies.
+A Tokener.ai provider plugin for OpenCode and magpie: API key sign-in, model discovery, Chat and Messages. Tested with magpie v0.1.1161. The entry is plain ESM: no build step or runtime dependencies.
+
+## Links
+
+- [GitHub](https://github.com/tokener-ai/magpie-plugin-tokener)
+- [npm](https://www.npmjs.com/package/@tokener-ai/magpie-plugin-tokener)
+- [Tokener.ai](https://tokener.ai)
+- [Console](https://console.tokener.ai) — create a model API key.
 
 ## Install and sign in
 
