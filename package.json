@@ -1,0 +1,13 @@
+{
+  "name": "@tokener-ai/magpie-plugin-tokener",
+  "version": "0.1.0",
+  "description": "Tokener.ai provider plugin for magpie",
+  "type": "module",
+  "main": "index.mjs",
+  "exports": "./index.mjs",
+  "files": ["index.mjs", "README.md"],
+  "license": "MIT",
+  "keywords": ["opencode", "opencode-plugin", "magpie", "tokener"],
+  "repository": {"type": "git", "url": "https://github.com/tokener-ai/magpie-plugin-tokener.git"},
+  "scripts": {"test": "bun test", "check": "bun scripts/check.mjs"}
+}
