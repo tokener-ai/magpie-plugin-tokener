@@ -16,8 +16,10 @@ beforeEach(async () => {
 afterEach(() => { globalThis.fetch = nativeFetch; mock.stop(); });
 const models = async () => (await TokenerPlugin({}, { baseUrl: mock.baseUrl })).provider.models({}, { auth: { type: "api", key: MOCK_KEY } });
 
-test("auth icon embeds the official light tile with unchanged brand paths", async () => {
+test("package and auth icons embed the same official light tile with unchanged brand paths", async () => {
   const { auth } = await TokenerPlugin({});
+  const metadata = await Bun.file(new URL("../package.json", import.meta.url)).json();
+  expect(metadata.magpie?.icon).toBe(auth.icon);
   expect(auth.icon.startsWith("data:image/svg+xml;base64,")).toBe(true);
   const svg = Buffer.from(auth.icon.split(",")[1], "base64").toString("utf8");
   expect(svg).toBe(await Bun.file(new URL("../assets/provider-icon.svg", import.meta.url)).text());
