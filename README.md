@@ -11,7 +11,7 @@ magpie provider refresh tokener
 magpie models
 ```
 
-The GitHub repository is currently private; installation requires GitHub access. Create a model API key at [console.tokener.ai](https://console.tokener.ai), then enter it at the login prompt. magpie stores the key and supplies the protocol-specific authentication headers. A management PAT is not needed. No usage or balance hook is provided.
+The GitHub repository is public. Create a model API key at [console.tokener.ai](https://console.tokener.ai), then enter it at the login prompt. magpie stores the key and supplies the protocol-specific authentication headers. A management PAT is not needed. No usage or balance hook is provided.
 
 For a local checkout:
 
@@ -19,7 +19,11 @@ For a local checkout:
 magpie plugin add /absolute/path/to/magpie-plugin-tokener
 ```
 
-After an npm release, the package will also be installable with `magpie plugin add @tokener-ai/magpie-plugin-tokener`. The package has not been published to npm.
+From npm:
+
+```sh
+magpie plugin add @tokener-ai/magpie-plugin-tokener
+```
 
 ## Models and protocols
 

@@ -8,6 +8,9 @@
   "files": ["index.mjs", "README.md"],
   "license": "MIT",
   "keywords": ["opencode", "opencode-plugin", "magpie", "tokener"],
+  "homepage": "https://github.com/tokener-ai/magpie-plugin-tokener#readme",
+  "bugs": {"url": "https://github.com/tokener-ai/magpie-plugin-tokener/issues"},
+  "publishConfig": {"access": "public"},
   "repository": {"type": "git", "url": "https://github.com/tokener-ai/magpie-plugin-tokener.git"},
   "scripts": {"test": "bun test", "check": "bun scripts/check.mjs"}
 }
