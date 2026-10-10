@@ -14,9 +14,9 @@ const redact = (value, headers, limit = 10000) => {
 const record = (value) => appendFileSync(evidence, `${JSON.stringify(value)}\n`, { mode: 0o600 });
 globalThis.fetch = async (input, init = {}) => {
   const url = new URL(typeof input === "string" ? input : input.url ?? String(input));
-  if (!["https://api.tokener.dev", "https://console.tokener.dev"].includes(url.origin)) throw new Error("Live verification blocked an unexpected destination");
+  if (!["https://api.tokener.ai", "https://console.tokener.ai"].includes(url.origin)) throw new Error("Live verification blocked an unexpected destination");
   const body = init.body ? JSON.parse(init.body) : null;
-  const generation = url.origin === "https://api.tokener.dev" && init.method === "POST";
+  const generation = url.origin === "https://api.tokener.ai" && init.method === "POST";
   const lock = `${statePath}.lock`;
   let descriptor;
   while (descriptor === undefined) {
@@ -29,8 +29,8 @@ globalThis.fetch = async (input, init = {}) => {
   let call;
   try {
     const state = JSON.parse(readFileSync(statePath, "utf8"));
-    scheduled = url.origin === "https://api.tokener.dev" ? Math.max(Date.now(), state.lastRequest + 2200) : Date.now();
-    if (url.origin === "https://api.tokener.dev") state.lastRequest = scheduled;
+    scheduled = url.origin === "https://api.tokener.ai" ? Math.max(Date.now(), state.lastRequest + 2200) : Date.now();
+    if (url.origin === "https://api.tokener.ai") state.lastRequest = scheduled;
     if (generation) {
       if (!Number.isInteger(body.max_tokens) || body.max_tokens < 1 || body.max_tokens > 64 || state.calls >= (state.limit ?? 15)) throw new Error("Live smoke request exceeded its token or call limit");
       state.calls++;

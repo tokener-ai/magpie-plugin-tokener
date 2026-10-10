@@ -199,6 +199,28 @@ Sanitized evidence: `/var/folders/5x/qb9zd6992hv4mxkfwtlvkfgh0000gn/T/tokener-li
 
 After the cleanup correction, offline simulations exercised both the successful tool round trip and the no-tool inconclusive branch, including SIGTERM child state; both exited 0. These simulations replace CLI/network transport and are probe-control-flow checks, not additional host or live acceptance evidence. Fresh Bun 1.3.14 `bun test`: 15 pass, 0 fail, 45 assertions. `bun run check`: Plugin shape OK: tokener; 9 fallback models; direct ESM entry.
 
+## Official domain revalidation
+
+The official default API base is `https://api.tokener.ai/v1`; the fixed public catalog and API-key console are under `https://console.tokener.ai`. This domain choice follows the owner's current decision. Provider branding remains Tokener.ai. The runtime change only replaces endpoint literals; discovery membership, authentication, protocol selection and error handling remain unchanged.
+
+On 2026-10-10, Bun 1.3.14 `bun test` passed 15 tests / 45 assertions and `bun run check` passed with 9 explicit fallback models. The installed v0.1.1161 host probe passed provider import, upstream IDs, Chat/Messages mapping, 401 expired, fellBack and byte-exact 404 errors. Fresh host evidence: `/var/folders/5x/qb9zd6992hv4mxkfwtlvkfgh0000gn/T/tokener-host-3waaat/result.json`.
+
+A bounded verification-only probe outside the repository used the updated live preload, with an enforced one-generation-call ceiling and the same isolated HOME/XDG settings contract:
+
+```sh
+TOKENER_SMOKE_KEY_FILE=<mode-600-temporary-key-file> bun /Users/x/git/tmp/tokener-magpie-plugin/build/verify-domain-live.mjs /Users/x/.local/bin/magpie
+```
+
+The actual installed magpie added this checkout, logged in via stdin, refreshed the provider and listed models with no baseUrl option. GET `https://api.tokener.ai/v1/models` returned 10 authorized IDs; GET `https://console.tokener.ai/api/public/v1/models` returned the public catalog. The installed model list exactly matched their 9-model intersection and excluded jev-latest. Exactly one gpt-5.6-luna generation was sent through magpie's local gateway: POST `https://api.tokener.ai/v1/chat/completions`, host-injected Bearer, max_tokens=64, HTTP 200 and streamed text. The probe stopped magpie and exited 0. No Messages, tool or cancellation generation was repeated in this domain-only revalidation.
+
+```text
+Live discovery OK: 10 authorized; 9 chat models; jev-latest excluded
+Default domain Chat OK: api.tokener.ai/v1/chat/completions; gpt-5.6-luna; HTTP 200; streamed text; max_tokens=64
+Official-domain smoke: OK; model calls=1
+```
+
+Sanitized evidence: `/var/folders/5x/qb9zd6992hv4mxkfwtlvkfgh0000gn/T/tokener-live-eHd3KC/result.json` and `trace.jsonl`; both passed exact-key and key-prefix scans. The final repository search for the retired domain returned zero matches. Prior protocol/tool/cancellation evidence remains historical; this section is the acceptance evidence for the official defaults.
+
 ## Findings
 
 `/v1/messages` with any `tool_choice` → 402 billing_error on Tokener; reproduced outside magpie with curl; plugin passes the error through unchanged. The owner independently bisected type tool, any and auto; removing tool_choice while retaining tools, stream and cache_control returned 200. The raw error fields were type billing_error and message "Insufficient credits.". This is an upstream Tokener ai-gateway/LiteLLM defect; the plugin adds no workaround. The successful unforced Messages smoke above supports this boundary. Error transparency is at the plugin-to-host boundary; magpie's local gateway JSON normalization is documented separately.

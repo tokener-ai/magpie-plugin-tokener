@@ -1,6 +1,6 @@
 const PROVIDER = "tokener";
-const BASE_URL = "https://api.tokener.dev/v1";
-const CATALOG_URL = "https://console.tokener.dev/api/public/v1/models";
+const BASE_URL = "https://api.tokener.ai/v1";
+const CATALOG_URL = "https://console.tokener.ai/api/public/v1/models";
 const CHAT = "@ai-sdk/openai-compatible";
 const ANTHROPIC = "@ai-sdk/anthropic";
 const FELL_BACK = Symbol.for("magpie.fellBack");
@@ -321,7 +321,7 @@ export default async function TokenerPlugin(_input, options = {}) {
     },
     auth: {
       provider: PROVIDER,
-      methods: [{ type: "api", label: "Tokener.ai API key", placeholder: "Create an API key at console.tokener.dev" }],
+      methods: [{ type: "api", label: "Tokener.ai API key", placeholder: "Create an API key at console.tokener.ai" }],
     },
     provider: {
       id: PROVIDER,

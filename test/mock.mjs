@@ -1,6 +1,6 @@
 export const MOCK_KEY = "mock-tokener-key-not-a-real-credential";
 export const MODEL_NOT_FOUND_BODY = '{"error":{"message":"mock model route unavailable","type":"invalid_request_error","code":"model_not_found","param":"model"},"request_id":"mock-route-404"}\n';
-export const CATALOG_URL = "https://console.tokener.dev/api/public/v1/models";
+export const CATALOG_URL = "https://console.tokener.ai/api/public/v1/models";
 export const catalog = {
   schemaVersion: 1,
   catalogRevision: "mock-revision",

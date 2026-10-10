@@ -11,7 +11,7 @@ magpie provider refresh tokener
 magpie models
 ```
 
-The GitHub repository is currently private; installation requires GitHub access. Create a model API key at [console.tokener.dev](https://console.tokener.dev), then enter it at the login prompt. magpie stores the key and supplies the protocol-specific authentication headers. A management PAT is not needed. No usage or balance hook is provided.
+The GitHub repository is currently private; installation requires GitHub access. Create a model API key at [console.tokener.ai](https://console.tokener.ai), then enter it at the login prompt. magpie stores the key and supplies the protocol-specific authentication headers. A management PAT is not needed. No usage or balance hook is provided.
 
 For a local checkout:
 
@@ -23,7 +23,7 @@ After an npm release, the package will also be installable with `magpie plugin a
 
 ## Models and protocols
 
-The plugin joins the API key's authorized model IDs from `GET https://api.tokener.dev/v1/models` with the public catalog at `https://console.tokener.dev/api/public/v1/models`. Only IDs present in both lists appear. Authorized-only IDs such as the decision model `jev-latest` are silently excluded; they cannot use Chat or Messages. Text embedding models are excluded. Public metadata supplies names, capabilities and USD prices per million tokens. Authorized `max_input_tokens` and `max_output_tokens` take precedence over public context/output limits; missing output limits use the public value or zero.
+The plugin joins the API key's authorized model IDs from `GET https://api.tokener.ai/v1/models` with the public catalog at `https://console.tokener.ai/api/public/v1/models`. Only IDs present in both lists appear. Authorized-only IDs such as the decision model `jev-latest` are silently excluded; they cannot use Chat or Messages. Text embedding models are excluded. Public metadata supplies names, capabilities and USD prices per million tokens. Authorized `max_input_tokens` and `max_output_tokens` take precedence over public context/output limits; missing output limits use the public value or zero.
 
 Anthropic catalog entries use magpie's native Messages path (`/v1/messages`); other entries use its native Chat path (`/v1/chat/completions`). Each entry declares its upstream model ID explicitly. magpie handles streaming, tool calls, cancellation and API-key injection. Request statuses are preserved: magpie marks a 401 account lapsed and handles 402 as a credit error.
 
@@ -31,10 +31,10 @@ If only public metadata fails, the plugin intersects the current authorized IDs 
 
 ## Option
 
-`baseUrl` is the only option. Its default is `https://api.tokener.dev/v1`; it must be an HTTP(S) API base without credentials, query or fragment. The API key is sent to this URL. For a trusted alternative endpoint, configure the installed plugin spec:
+`baseUrl` is the only option. Its default is `https://api.tokener.ai/v1`; it must be an HTTP(S) API base without credentials, query or fragment. The API key is sent to this URL. For a trusted alternative endpoint, configure the installed plugin spec:
 
 ```sh
-magpie plugin options github:tokener-ai/magpie-plugin-tokener '{"baseUrl":"https://api.tokener.dev/v1"}'
+magpie plugin options github:tokener-ai/magpie-plugin-tokener '{"baseUrl":"https://api.tokener.ai/v1"}'
 ```
 
 For a local installation, replace the GitHub spec with the same absolute directory used for `plugin add`. The public catalog URL stays fixed.
