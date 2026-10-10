@@ -16,6 +16,16 @@ beforeEach(async () => {
 afterEach(() => { globalThis.fetch = nativeFetch; mock.stop(); });
 const models = async () => (await TokenerPlugin({}, { baseUrl: mock.baseUrl })).provider.models({}, { auth: { type: "api", key: MOCK_KEY } });
 
+test("auth icon embeds the official light tile with unchanged brand paths", async () => {
+  const { auth } = await TokenerPlugin({});
+  expect(auth.icon.startsWith("data:image/svg+xml;base64,")).toBe(true);
+  const svg = Buffer.from(auth.icon.split(",")[1], "base64").toString("utf8");
+  expect(svg).toBe(await Bun.file(new URL("../assets/provider-icon.svg", import.meta.url)).text());
+  const mark = await Bun.file(new URL("../assets/logo-mark.svg", import.meta.url)).text();
+  expect(svg.match(/<path\b[^>]*\/>/g)).toEqual(mark.match(/<path\b[^>]*\/>/g));
+  expect(svg).toMatch(/^<svg\b[^>]*\bxmlns="http:\/\/www\.w3\.org\/2000\/svg"[^>]*>\s*<rect\b[^>]*\/>\s*<g\b[^>]*>\s*(?:<path\b[^>]*\/>\s*)+<\/g>\s*<\/svg>\s*$/);
+});
+
 test("catalog intersection controls membership; authorized token limits override public metadata", async () => {
   const result = await models();
   expect(Object.keys(result)).toEqual(["chat-model", "messages-model"]);
